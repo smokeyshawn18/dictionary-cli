@@ -3,7 +3,7 @@
 set -e
 
 REPO="smokeyshawn18/dictionary-cli"
-VERSION="latest"
+VERSION="v1.0.0"   # Replace with your actual release tag
 BINARY_NAME="define"
 
 echo "📦 Installing $BINARY_NAME from $REPO..."
@@ -44,7 +44,7 @@ ZIP_NAME="dictionary-cli-$PLATFORM-$ARCH.zip"
 BIN_NAME="dictionary-cli-$PLATFORM-$ARCH"
 
 echo "➡️ Downloading $ZIP_NAME..."
-curl -LO "https://github.com/$REPO/releases/$VERSION/download/$ZIP_NAME"
+curl -LO "https://github.com/$REPO/releases/download/$VERSION/$ZIP_NAME"
 
 echo "📂 Unzipping..."
 unzip -o "$ZIP_NAME"
@@ -55,4 +55,8 @@ chmod +x "$BIN_NAME"
 echo "🚚 Moving to /usr/local/bin/$BINARY_NAME"
 sudo mv "$BIN_NAME" /usr/local/bin/$BINARY_NAME
 
-echo "✅ Installed! Try running: define ephemeral"
+# Optional symlink
+echo "🔗 Linking to define"
+sudo ln -sf /usr/local/bin/$BINARY_NAME /usr/local/bin/define
+
+echo "✅ Installed! Try running: define hello"
