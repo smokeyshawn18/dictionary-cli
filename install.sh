@@ -4,29 +4,55 @@ set -e
 
 REPO="smokeyshawn18/dictionary-cli"
 VERSION="latest"
-APP="define"
-OS=$(uname | tr '[:upper:]' '[:lower:]')
+BINARY_NAME="define"
+
+echo "📦 Installing $BINARY_NAME from $REPO..."
+
+# Detect OS and ARCH
+OS=$(uname -s)
 ARCH=$(uname -m)
 
-if [[ "$ARCH" == "x86_64" ]]; then
-  ARCH="amd64"
-elif [[ "$ARCH" == "aarch64" || "$ARCH" == "arm64" ]]; then
-  ARCH="arm64"
-else
-  echo "Unsupported architecture: $ARCH"
-  exit 1
-fi
+case "$OS" in
+  "Linux")
+    PLATFORM="linux"
+    ;;
+  "Darwin")
+    PLATFORM="darwin"
+    ;;
+  *)
+    echo "❌ Unsupported OS: $OS"
+    echo "Please download manually from: https://github.com/$REPO/releases"
+    exit 1
+    ;;
+esac
 
-BINARY="${APP}-${OS}-${ARCH}.zip"
-URL="https://github.com/$REPO/releases/$VERSION/download/$BINARY"
+case "$ARCH" in
+  "x86_64")
+    ARCH="amd64"
+    ;;
+  "arm64" | "aarch64")
+    ARCH="arm64"
+    ;;
+  *)
+    echo "❌ Unsupported architecture: $ARCH"
+    echo "Please download manually from: https://github.com/$REPO/releases"
+    exit 1
+    ;;
+esac
 
-echo "📦 Downloading $BINARY..."
-curl -sSL -o "$BINARY" "$URL"
+ZIP_NAME="dictionary-cli-$PLATFORM-$ARCH.zip"
+BIN_NAME="dictionary-cli-$PLATFORM-$ARCH"
+
+echo "➡️ Downloading $ZIP_NAME..."
+curl -LO "https://github.com/$REPO/releases/$VERSION/download/$ZIP_NAME"
 
 echo "📂 Unzipping..."
-unzip "$BINARY" -d /usr/local/bin/
-chmod +x /usr/local/bin/$APP
-rm "$BINARY"
+unzip -o "$ZIP_NAME"
 
-echo "✅ Installed: $APP"
-echo "Run: $APP <word>"
+echo "🔧 Making executable..."
+chmod +x "$BIN_NAME"
+
+echo "🚚 Moving to /usr/local/bin/$BINARY_NAME"
+sudo mv "$BIN_NAME" /usr/local/bin/$BINARY_NAME
+
+echo "✅ Installed! Try running: define ephemeral"
